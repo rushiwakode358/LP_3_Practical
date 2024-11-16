@@ -1,39 +1,59 @@
-def fibonacci_recursive(n):
-    """
-    Recursive implementation of Fibonacci.
-    """
-    if n <= 1:
-        return n
-    return fibonacci_recursive(n - 1) + fibonacci_recursive(n - 2)
+# Iterative Fibonacci function
+def fibonacci_iterative(n):
+    if n <= 0:
+        return 0
+    elif n == 1:
+        return 1
 
-
-def fibonacci_non_recursive(n):
-    """
-    Non-recursive (iterative) implementation of Fibonacci.
-    """
-    if n <= 1:
-        return n
-
-    a, b = 0, 1  # Initialize the first two Fibonacci numbers
-    for _ in range(2, n + 1):
-        a, b = b, a + b  # Update to the next Fibonacci number
+    a, b = 0, 1
+    for _ in range(2, n+1):
+        a, b = b, a + b
     return b
 
+# Recursive Fibonacci function
+def fibonacci_recursive(n):
+    if n <= 0:
+        return 0
+    elif n == 1:
+        return 1
+    else:
+        return fibonacci_recursive(n - 1) + fibonacci_recursive(n - 2)
 
-def main():
-    """
-    Main function to get user input and calculate Fibonacci using both methods.
-    """
-    n = int(input("Enter the value of n: "))
+# Memoized Fibonacci function
+def fibonacci_memoization(n, memo={}):
+    if n <= 0:
+        return 0
+    elif n == 1:
+        return 1
+    if n not in memo:
+        memo[n] = fibonacci_memoization(n - 1, memo) + fibonacci_memoization(n - 2, memo)
+    return memo[n]
 
-    # Calculate using both methods
-    recursive_result = fibonacci_recursive(n)
-    non_recursive_result = fibonacci_non_recursive(n)
+# Taking user input
+try:
+    n = int(input("Enter a number to calculate the Fibonacci: "))
+    
+    # Ensure the input is non-negative
+    if n < 0:
+        print("Please enter a non-negative number.")
+    else:
+        # Iterative Fibonacci
+        result_iter = fibonacci_iterative(n)
+        print(f"Fibonacci Iterative of {n} is: {result_iter}")
+        print(f"Time Complexity: O(n)")
+        print(f"Space Complexity: O(1)\n")
+        
+        # Recursive Fibonacci
+        result_rec = fibonacci_recursive(n)
+        print(f"Fibonacci Recursive of {n} is: {result_rec}")
+        print(f"Time Complexity: O(2^n)")
+        print(f"Space Complexity: O(n) (due to recursive stack)\n")
+        
+        # Memoized Fibonacci
+        result_memo = fibonacci_memoization(n)
+        print(f"Fibonacci Memoization of {n} is: {result_memo}")
+        print(f"Time Complexity: O(n)")
+        print(f"Space Complexity: O(n) (due to memo dictionary)\n")
 
-    # Print results
-    print(f"Fibonacci (Recursive) of {n} is: {recursive_result}")
-    print(f"Fibonacci (Non-Recursive) of {n} is: {non_recursive_result}")
-
-
-if __name__ == "__main__":
-    main()
+except ValueError:
+    print("Invalid input! Please enter an integer.")
