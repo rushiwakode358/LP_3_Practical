@@ -1,31 +1,52 @@
-def knapsack(weights, values, capacity):
-    n = len(weights)
-    # Create a 2D DP array, where dp[i][w] represents the maximum value for the first i items with a weight limit w.
-    dp = [[0 for _ in range(capacity + 1)] for _ in range(n + 1)]
+# Class to represent an item in the knapsack
+class Item:
+    def __init__(self, value, weight):
+        self.value = value
+        self.weight = weight
 
-    # Fill the DP table
-    for i in range(1, n + 1):
-        for w in range(1, capacity + 1):
-            if weights[i - 1] <= w:
-                dp[i][w] = max(dp[i - 1][w], dp[i - 1][w - weights[i - 1]] + values[i - 1])
-            else:
-                dp[i][w] = dp[i - 1][w]
+    # Function to calculate value-to-weight ratio
+    def value_per_weight(self):
+        return self.value / self.weight
 
-    # Backtrack to find the items included
-    w = capacity
-    included_items = []
-    for i in range(n, 0, -1):
-        if dp[i][w] != dp[i - 1][w]:
-            included_items.append(i - 1)
-            w -= weights[i - 1]
+# Function to solve the Fractional Knapsack Problem
+def fractional_knapsack(items, capacity):
+    # Sort items by value-to-weight ratio in descending order
+    items.sort(key=lambda item: item.value_per_weight(), reverse=True)
 
-    return dp[n][capacity], included_items
+    total_value = 0.0  # Total value accumulated in the knapsack
+    total_weight = 0   # Total weight accumulated in the knapsack
 
-# Example usage
-weights = [2, 3, 4, 5]  # Weights of the items
-values = [3, 4, 5, 6]   # Values of the items
-capacity = 5            # Maximum weight capacity of the knapsack
+    # Loop through the sorted items
+    for item in items:
+        if total_weight + item.weight <= capacity:
+            # If adding the whole item doesn't exceed capacity, take the whole item
+            total_weight += item.weight
+            total_value += item.value
+        else:
+            # Otherwise, take a fraction of the item to fill the knapsack
+            remaining_capacity = capacity - total_weight
+            fraction = remaining_capacity / item.weight
+            total_value += item.value * fraction
+            total_weight += item.weight * fraction
+            break  # Knapsack is now full
 
-max_value, items = knapsack(weights, values, capacity)
-print(f"Maximum value: {max_value}")
-print(f"Items included: {items}")
+    return total_value
+
+# Main function to test the Fractional Knapsack
+if __name__ == "__main__":
+    # Taking input from the user
+    n = int(input("Enter the number of items: "))
+
+    items = []
+    for i in range(n):
+        value = float(input(f"Enter value of item {i + 1}: "))
+        weight = float(input(f"Enter weight of item {i + 1}: "))
+        items.append(Item(value, weight))
+
+    # Input: Capacity of the knapsack
+    capacity = float(input("Enter the capacity of the knapsack: "))
+
+    # Calculate the maximum value of the knapsack
+    max_value = fractional_knapsack(items, capacity)
+
+    print(f"\nMaximum value in Knapsack: {max_value:.2f}")
