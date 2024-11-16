@@ -1,31 +1,33 @@
-def knapsack(weights, values, capacity):
-    n = len(weights)
-    # Create a 2D DP array, where dp[i][w] represents the maximum value for the first i items with a weight limit w.
-    dp = [[0 for _ in range(capacity + 1)] for _ in range(n + 1)]
+def knapsack_dp(W, wt, val, n):
+    """A Dynamic Programming based solution for 0-1 Knapsack problem
+    Returns the maximum value that can be put in a knapsack of capacity W."""
+    
+    K = [[0 for x in range(W + 1)] for x in range(n + 1)]
 
-    # Fill the DP table
-    for i in range(1, n + 1):
-        for w in range(1, capacity + 1):
-            if weights[i - 1] <= w:
-                dp[i][w] = max(dp[i - 1][w], dp[i - 1][w - weights[i - 1]] + values[i - 1])
+    # Build table K[][] in bottom up manner
+    for i in range(n + 1):
+        for w in range(W + 1):
+            if i == 0 or w == 0:
+                K[i][w] = 0
+            elif wt[i - 1] <= w:
+                K[i][w] = max(val[i - 1] + K[i - 1][w - wt[i - 1]], K[i - 1][w])
             else:
-                dp[i][w] = dp[i - 1][w]
+                K[i][w] = K[i - 1][w]
+    
+    return K[n][W]
 
-    # Backtrack to find the items included
-    w = capacity
-    included_items = []
-    for i in range(n, 0, -1):
-        if dp[i][w] != dp[i - 1][w]:
-            included_items.append(i - 1)
-            w -= weights[i - 1]
+# Taking input from the user
+n = int(input("Enter the number of items: "))
+val = []
+wt = []
 
-    return dp[n][capacity], included_items
+for i in range(n):
+    value = int(input(f"Enter value of item {i + 1}: "))
+    weight = int(input(f"Enter weight of item {i + 1}: "))
+    val.append(value)
+    wt.append(weight)
 
-# Example usage
-weights = [2, 3, 4, 5]  # Weights of the items
-values = [3, 4, 5, 6]   # Values of the items
-capacity = 5            # Maximum weight capacity of the knapsack
+W = int(input("Enter the capacity of the knapsack: "))
 
-max_value, items = knapsack(weights, values, capacity)
-print(f"Maximum value: {max_value}")
-print(f"Items included: {items}")
+# Calculate and print the maximum possible profit
+print("Maximum possible profit =", knapsack_dp(W, wt, val, n))
